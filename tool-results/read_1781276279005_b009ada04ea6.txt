@@ -1,0 +1,794 @@
+     1→// =============================================================================
+     2→// CONHEÇA O BRASIL - IBGE Data Module
+     3→// Condições de vida, desigualdade e pobreza
+     4→// Baseado em dados reais do IBGE (PNAD Contínua, Síntese de Indicadores Sociais)
+     5→// =============================================================================
+     6→
+     7→// ─── TypeScript Interfaces ───────────────────────────────────────────────────
+     8→
+     9→export interface YearValuePair {
+    10→  year: number;
+    11→  value: number;
+    12→}
+    13→
+    14→export interface RegionData {
+    15→  region: string;
+    16→  value: number;
+    17→}
+    18→
+    19→export interface RegionIncomeData {
+    20→  region: string;
+    21→  income: number;
+    22→}
+    23→
+    24→export interface RaceIncomeData {
+    25→  race: string;
+    26→  income: number;
+    27→}
+    28→
+    29→export interface SexIncomeData {
+    30→  sex: string;
+    31→  income: number;
+    32→}
+    33→
+    34→export interface StatePovertyData {
+    35→  state: string;
+    36→  rate: number;
+    37→}
+    38→
+    39→export interface QuintileData {
+    40→  label: string;
+    41→  percentage: number;
+    42→}
+    43→
+    44→export interface Curiosidade {
+    45→  id: string;
+    46→  text: string;
+    47→  category: string;
+    48→  year?: number;
+    49→}
+    50→
+    51→export interface QuizQuestion {
+    52→  id: string;
+    53→  question: string;
+    54→  options: string[];
+    55→  correctIndex: number;
+    56→  category: string;
+    57→}
+    58→
+    59→// ─── 1. Poverty Rate (US$ 6.85 PPP/day) ─────────────────────────────────────
+    60→
+    61→export const povertyRate: YearValuePair[] = [
+    62→  { year: 2012, value: 24.8 },
+    63→  { year: 2013, value: 22.7 },
+    64→  { year: 2014, value: 20.5 },
+    65→  { year: 2015, value: 22.9 },
+    66→  { year: 2016, value: 25.1 },
+    67→  { year: 2017, value: 25.4 },
+    68→  { year: 2018, value: 24.7 },
+    69→  { year: 2019, value: 23.2 },
+    70→  { year: 2020, value: 21.7 },
+    71→  { year: 2021, value: 28.4 },
+    72→  { year: 2022, value: 25.5 },
+    73→  { year: 2023, value: 27.3 },
+    74→  { year: 2024, value: 23.1 },
+    75→];
+    76→
+    77→// ─── 2. Extreme Poverty Rate (US$ 2.15 PPP/day) ────────────────────────────
+    78→
+    79→export const extremePovertyRate: YearValuePair[] = [
+    80→  { year: 2012, value: 7.1 },
+    81→  { year: 2013, value: 5.9 },
+    82→  { year: 2014, value: 4.8 },
+    83→  { year: 2015, value: 5.9 },
+    84→  { year: 2016, value: 7.0 },
+    85→  { year: 2017, value: 7.4 },
+    86→  { year: 2018, value: 7.1 },
+    87→  { year: 2019, value: 6.5 },
+    88→  { year: 2020, value: 5.7 },
+    89→  { year: 2021, value: 8.4 },
+    90→  { year: 2022, value: 7.0 },
+    91→  { year: 2023, value: 4.4 },
+    92→  { year: 2024, value: 3.5 },
+    93→];
+    94→
+    95→// ─── 3. Gini Index by Year ──────────────────────────────────────────────────
+    96→
+    97→export const giniIndex: YearValuePair[] = [
+    98→  { year: 2012, value: 0.530 },
+    99→  { year: 2013, value: 0.527 },
+   100→  { year: 2014, value: 0.518 },
+   101→  { year: 2015, value: 0.518 },
+   102→  { year: 2016, value: 0.521 },
+   103→  { year: 2017, value: 0.519 },
+   104→  { year: 2018, value: 0.517 },
+   105→  { year: 2019, value: 0.519 },
+   106→  { year: 2020, value: 0.524 },
+   107→  { year: 2021, value: 0.529 },
+   108→  { year: 2022, value: 0.518 },
+   109→  { year: 2023, value: 0.517 },
+   110→  { year: 2024, value: 0.504 },
+   111→];
+   112→
+   113→// ─── 4. Average Monthly Income by Region (R$, 2024) ─────────────────────────
+   114→
+   115→export const incomeByRegion: RegionIncomeData[] = [
+   116→  { region: "Norte", income: 1617 },
+   117→  { region: "Nordeste", income: 1398 },
+   118→  { region: "Sudeste", income: 2731 },
+   119→  { region: "Sul", income: 2465 },
+   120→  { region: "Centro-Oeste", income: 2589 },
+   121→  { region: "Brasil", income: 2181 },
+   122→];
+   123→
+   124→// ─── 5. Poverty Rate by Region (2024) ───────────────────────────────────────
+   125→
+   126→export const povertyByRegion: RegionData[] = [
+   127→  { region: "Norte", value: 34.2 },
+   128→  { region: "Nordeste", value: 34.8 },
+   129→  { region: "Sudeste", value: 15.0 },
+   130→  { region: "Sul", value: 13.5 },
+   131→  { region: "Centro-Oeste", value: 16.2 },
+   132→];
+   133→
+   134→// ─── 6. Income Inequality - Palma Ratio by Year ─────────────────────────────
+   135→
+   136→export const palmaRatio: YearValuePair[] = [
+   137→  { year: 2012, value: 15.8 },
+   138→  { year: 2013, value: 15.2 },
+   139→  { year: 2014, value: 14.3 },
+   140→  { year: 2015, value: 14.4 },
+   141→  { year: 2016, value: 14.6 },
+   142→  { year: 2017, value: 14.5 },
+   143→  { year: 2018, value: 14.3 },
+   144→  { year: 2019, value: 14.5 },
+   145→  { year: 2020, value: 14.8 },
+   146→  { year: 2021, value: 15.3 },
+   147→  { year: 2022, value: 13.9 },
+   148→  { year: 2023, value: 13.7 },
+   149→  { year: 2024, value: 13.4 },
+   150→];
+   151→
+   152→// ─── 7. Population in Poverty by State (Top 10, 2024) ───────────────────────
+   153→
+   154→export const povertyByState: StatePovertyData[] = [
+   155→  { state: "Maranhão", rate: 42.5 },
+   156→  { state: "Alagoas", rate: 38.2 },
+   157→  { state: "Piauí", rate: 35.8 },
+   158→  { state: "Amazonas", rate: 35.1 },
+   159→  { state: "Acre", rate: 34.7 },
+   160→  { state: "Paraíba", rate: 32.9 },
+   161→  { state: "Sergipe", rate: 31.5 },
+   162→  { state: "Bahia", rate: 31.2 },
+   163→  { state: "Roraima", rate: 30.8 },
+   164→  { state: "Ceará", rate: 29.5 },
+   165→];
+   166→
+   167→// ─── 8. Social Indicators by Year ───────────────────────────────────────────
+   168→
+   169→export const literacyRate: YearValuePair[] = [
+   170→  { year: 2012, value: 91.8 },
+   171→  { year: 2015, value: 93.0 },
+   172→  { year: 2019, value: 93.7 },
+   173→  { year: 2022, value: 94.4 },
+   174→  { year: 2024, value: 95.2 },
+   175→];
+   176→
+   177→export const waterSupplyAccess: YearValuePair[] = [
+   178→  { year: 2012, value: 83.9 },
+   179→  { year: 2015, value: 85.6 },
+   180→  { year: 2019, value: 87.5 },
+   181→  { year: 2022, value: 88.8 },
+   182→  { year: 2024, value: 90.1 },
+   183→];
+   184→
+   185→export const sewageAccess: YearValuePair[] = [
+   186→  { year: 2012, value: 50.3 },
+   187→  { year: 2015, value: 53.5 },
+   188→  { year: 2019, value: 57.1 },
+   189→  { year: 2022, value: 60.2 },
+   190→  { year: 2024, value: 63.5 },
+   191→];
+   192→
+   193→export const internetAccessAtHome: YearValuePair[] = [
+   194→  { year: 2012, value: 43.3 },
+   195→  { year: 2015, value: 58.3 },
+   196→  { year: 2019, value: 72.2 },
+   197→  { year: 2022, value: 83.0 },
+   198→  { year: 2024, value: 87.5 },
+   199→];
+   200→
+   201→// ─── 9. Average Income by Color/Race (2024, R$/month) ───────────────────────
+   202→
+   203→export const incomeByRace: RaceIncomeData[] = [
+   204→  { race: "Branca", income: 3014 },
+   205→  { race: "Preta", income: 1834 },
+   206→  { race: "Parda", income: 1762 },
+   207→  { race: "Amarela", income: 2520 },
+   208→  { race: "Indígena", income: 1235 },
+   209→];
+   210→
+   211→// ─── 10. Average Income by Sex (2024, R$/month) ─────────────────────────────
+   212→
+   213→export const incomeBySex: SexIncomeData[] = [
+   214→  { sex: "Homem", income: 2567 },
+   215→  { sex: "Mulher", income: 1829 },
+   216→];
+   217→
+   218→// ─── 11. Employment Rate by Year ────────────────────────────────────────────
+   219→
+   220→export const employmentRate: YearValuePair[] = [
+   221→  { year: 2012, value: 56.3 },
+   222→  { year: 2013, value: 57.1 },
+   223→  { year: 2014, value: 57.7 },
+   224→  { year: 2015, value: 56.1 },
+   225→  { year: 2016, value: 54.7 },
+   226→  { year: 2017, value: 54.8 },
+   227→  { year: 2018, value: 55.3 },
+   228→  { year: 2019, value: 56.0 },
+   229→  { year: 2020, value: 51.8 },
+   230→  { year: 2021, value: 54.3 },
+   231→  { year: 2022, value: 56.8 },
+   232→  { year: 2023, value: 57.9 },
+   233→  { year: 2024, value: 58.5 },
+   234→];
+   235→
+   236→// ─── 12. Population Estimates (millions) ────────────────────────────────────
+   237→
+   238→export const populationEstimates: YearValuePair[] = [
+   239→  { year: 2012, value: 198.6 },
+   240→  { year: 2013, value: 200.4 },
+   241→  { year: 2014, value: 202.2 },
+   242→  { year: 2015, value: 204.0 },
+   243→  { year: 2016, value: 205.7 },
+   244→  { year: 2017, value: 207.4 },
+   245→  { year: 2018, value: 209.0 },
+   246→  { year: 2019, value: 210.5 },
+   247→  { year: 2020, value: 211.8 },
+   248→  { year: 2021, value: 213.2 },
+   249→  { year: 2022, value: 214.5 },
+   250→  { year: 2023, value: 215.8 },
+   251→  { year: 2024, value: 217.0 },
+   252→];
+   253→
+   254→// ─── 13. HDI by Region ──────────────────────────────────────────────────────
+   255→
+   256→export const hdiByRegion: RegionData[] = [
+   257→  { region: "Norte", value: 0.667 },
+   258→  { region: "Nordeste", value: 0.663 },
+   259→  { region: "Sudeste", value: 0.766 },
+   260→  { region: "Sul", value: 0.758 },
+   261→  { region: "Centro-Oeste", value: 0.738 },
+   262→];
+   263→
+   264→// ─── 14. Income Distribution by Quintile (2024) ─────────────────────────────
+   265→
+   266→export const incomeDistributionByQuintile: QuintileData[] = [
+   267→  { label: "20% mais pobres", percentage: 3.2 },
+   268→  { label: "2º quintil", percentage: 7.8 },
+   269→  { label: "3º quintil", percentage: 12.5 },
+   270→  { label: "4º quintil", percentage: 19.8 },
+   271→  { label: "20% mais ricos", percentage: 56.7 },
+   272→];
+   273→
+   274→// ─── 15. Child Poverty Rate (0-14 years) ────────────────────────────────────
+   275→
+   276→export const childPovertyRate: YearValuePair[] = [
+   277→  { year: 2012, value: 29.1 },
+   278→  { year: 2015, value: 26.8 },
+   279→  { year: 2019, value: 25.2 },
+   280→  { year: 2021, value: 33.7 },
+   281→  { year: 2023, value: 28.3 },
+   282→  { year: 2024, value: 23.8 },
+   283→];
+   284→
+   285→// ─── 16. Elderly (65+) in Poverty ───────────────────────────────────────────
+   286→
+   287→export const elderlyPovertyRate: YearValuePair[] = [
+   288→  { year: 2012, value: 12.3 },
+   289→  { year: 2015, value: 10.2 },
+   290→  { year: 2019, value: 9.8 },
+   291→  { year: 2021, value: 14.2 },
+   292→  { year: 2023, value: 11.7 },
+   293→  { year: 2024, value: 9.3 },
+   294→];
+   295→
+   296→// ─── 17. Informal Employment Rate ───────────────────────────────────────────
+   297→
+   298→export const informalEmploymentRate: YearValuePair[] = [
+   299→  { year: 2012, value: 37.8 },
+   300→  { year: 2015, value: 38.2 },
+   301→  { year: 2019, value: 40.7 },
+   302→  { year: 2021, value: 39.5 },
+   303→  { year: 2023, value: 38.9 },
+   304→  { year: 2024, value: 37.5 },
+   305→];
+   306→
+   307→// ─── 18. Social Program Beneficiaries (millions) ────────────────────────────
+   308→
+   309→export const socialProgramBeneficiaries: YearValuePair[] = [
+   310→  { year: 2012, value: 13.9 },
+   311→  { year: 2015, value: 13.8 },
+   312→  { year: 2019, value: 14.2 },
+   313→  { year: 2021, value: 14.6 },
+   314→  { year: 2022, value: 20.6 },
+   315→  { year: 2023, value: 21.4 },
+   316→  { year: 2024, value: 20.1 },
+   317→];
+   318→
+   319→// ─── 19. Food Insecurity (moderate/severe, %) ───────────────────────────────
+   320→
+   321→export const foodInsecurity: YearValuePair[] = [
+   322→  { year: 2013, value: 22.6 },
+   323→  { year: 2018, value: 25.7 },
+   324→  { year: 2020, value: 30.2 },
+   325→  { year: 2022, value: 27.7 },
+   326→  { year: 2024, value: 23.1 },
+   327→];
+   328→
+   329→// ─── 20. Housing Conditions (% with adequate housing) ───────────────────────
+   330→
+   331→export const housingConditions: YearValuePair[] = [
+   332→  { year: 2012, value: 62.4 },
+   333→  { year: 2015, value: 66.3 },
+   334→  { year: 2019, value: 70.8 },
+   335→  { year: 2022, value: 74.2 },
+   336→  { year: 2024, value: 77.5 },
+   337→];
+   338→
+   339→// ─── 21. School Enrollment Rate (6-14 years, %) ─────────────────────────────
+   340→
+   341→export const schoolEnrollmentRate: YearValuePair[] = [
+   342→  { year: 2012, value: 97.1 },
+   343→  { year: 2015, value: 97.8 },
+   344→  { year: 2019, value: 98.2 },
+   345→  { year: 2022, value: 98.5 },
+   346→  { year: 2024, value: 98.9 },
+   347→];
+   348→
+   349→// =============================================================================
+   350→// CURIOSIDADES - Interesting facts and insights derived from IBGE data
+   351→// =============================================================================
+   352→
+   353→export const curiosidades: Curiosidade[] = [
+   354→  {
+   355→    id: "cur-01",
+   356→    text: "Em 2024, o Brasil atingiu a menor taxa de pobreza extrema da série histórica, com apenas 3,5% da população sobrevivendo com menos de US$ 2,15 por dia.",
+   357→    category: "Pobreza",
+   358→    year: 2024,
+   359→  },
+   360→  {
+   361→    id: "cur-02",
+   362→    text: "O Índice de Gini caiu de 0,530 em 2012 para 0,504 em 2024, a menor marca da série histórica, indicando uma redução na desigualdade de renda ao longo de 12 anos.",
+   363→    category: "Desigualdade",
+   364→    year: 2024,
+   365→  },
+   366→  {
+   367→    id: "cur-03",
+   368→    text: "Aproximadamente 8,6 milhões de pessoas saíram da pobreza entre 2023 e 2024, uma das maiores reduções anuais já registradas.",
+   369→    category: "Pobreza",
+   370→    year: 2024,
+   371→  },
+   372→  {
+   373→    id: "cur-04",
+   374→    text: "A região Nordeste tem a maior taxa de pobreza do país (34,8%), seguida de perto pela Norte (34,2%). Juntas, concentram quase 70% da pobreza brasileira.",
+   375→    category: "Pobreza",
+   376→    year: 2024,
+   377→  },
+   378→  {
+   379→    id: "cur-05",
+   380→    text: "O rendimento médio mensal de pessoas brancas (R$ 3.014) é 71% superior ao de pessoas pardas (R$ 1.762), evidenciando a persistência da desigualdade racial no Brasil.",
+   381→    category: "Desigualdade",
+   382→    year: 2024,
+   383→  },
+   384→  {
+   385→    id: "cur-06",
+   386→    text: "As mulheres ganham em média R$ 738 a menos que os homens (R$ 1.829 vs R$ 2.567), uma diferença de quase 29% que revela a desigualdade de gênero no mercado de trabalho.",
+   387→    category: "Renda",
+   388→    year: 2024,
+   389→  },
+   390→  {
+   391→    id: "cur-07",
+   392→    text: "Os 20% mais ricos concentram 56,7% de toda a renda do país, enquanto os 20% mais pobres ficam com apenas 3,2% — uma relação de quase 18 para 1.",
+   393→    category: "Desigualdade",
+   394→    year: 2024,
+   395→  },
+   396→  {
+   397→    id: "cur-08",
+   398→    text: "O Maranhão é o estado com a maior taxa de pobreza do Brasil: 42,5% de sua população vive abaixo da linha de pobreza em 2024.",
+   399→    category: "Pobreza",
+   400→    year: 2024,
+   401→  },
+   402→  {
+   403→    id: "cur-09",
+   404→    text: "Em 2021, durante a pandemia, a taxa de pobreza atingiu o pico de 28,4% e a pobreza extrema chegou a 8,4%, o maior valor da série histórica.",
+   405→    category: "Pobreza",
+   406→    year: 2021,
+   407→  },
+   408→  {
+   409→    id: "cur-10",
+   410→    text: "O acesso à internet em domicílios mais que dobrou em 12 anos, passando de 43,3% em 2012 para 87,5% em 2024 — uma transformação digital significativa.",
+   411→    category: "Infraestrutura",
+   412→    year: 2024,
+   413→  },
+   414→  {
+   415→    id: "cur-11",
+   416→    text: "A taxa de alfabetização do Brasil alcançou 95,2% em 2024, mas ainda há cerca de 10,4 milhões de analfabetos no país.",
+   417→    category: "Educação",
+   418→    year: 2024,
+   419→  },
+   420→  {
+   421→    id: "cur-12",
+   422→    text: "A pobreza infantil (0-14 anos) é sistematicamente maior que a geral: em 2024, 23,8% das crianças estavam em situação de pobreza contra 23,1% da população total.",
+   423→    category: "Pobreza",
+   424→    year: 2024,
+   425→  },
+   426→  {
+   427→    id: "cur-13",
+   428→    text: "A população indígena tem o menor rendimento médio mensal (R$ 1.235), equivalente a apenas 41% da renda da população branca.",
+   429→    category: "Desigualdade",
+   430→    year: 2024,
+   431→  },
+   432→  {
+   433→    id: "cur-14",
+   434→    text: "O Bolsa Família atingiu 21,4 milhões de famílias beneficiárias em 2023, o maior número da história do programa, desempenhando papel crucial na redução da pobreza.",
+   435→    category: "Política Social",
+   436→    year: 2023,
+   437→  },
+   438→  {
+   439→    id: "cur-15",
+   440→    text: "O acesso a esgotamento sanitário subiu de 50,3% em 2012 para 63,5% em 2024, mas ainda significa que mais de 79 milhões de brasileiros não têm coleta de esgoto.",
+   441→    category: "Infraestrutura",
+   442→    year: 2024,
+   443→  },
+   444→  {
+   445→    id: "cur-16",
+   446→    text: "A região Sudeste tem renda média mensal de R$ 2.731, quase o dobro da região Nordeste (R$ 1.398), revelando uma profunda desigualdade regional.",
+   447→    category: "Desigualdade",
+   448→    year: 2024,
+   449→  },
+   450→  {
+   451→    id: "cur-17",
+   452→    text: "Em 2020, a pandemia causou a maior queda na taxa de ocupação: de 56,0% para 51,8%, retirando milhões de trabalhadores do mercado formal e informal.",
+   453→    category: "Emprego",
+   454→    year: 2020,
+   455→  },
+   456→  {
+   457→    id: "cur-18",
+   458→    text: "A insegurança alimentar moderada/grave atingiu o pico de 30,2% em 2020 — quase 1 em cada 3 brasileiros não tinha acesso regular e suficiente a alimentos.",
+   459→    category: "Segurança Alimentar",
+   460→    year: 2020,
+   461→  },
+   462→  {
+   463→    id: "cur-19",
+   464→    text: "A taxa de escolarização de crianças de 6 a 14 anos chegou a 98,9% em 2024, uma das maiores do mundo nessa faixa etária.",
+   465→    category: "Educação",
+   466→    year: 2024,
+   467→  },
+   468→  {
+   469→    id: "cur-20",
+   470→    text: "O IDH da região Nordeste (0,663) é comparável ao de países como Índia e Vietnã, enquanto o Sudeste (0,766) se aproxima de nações como Uruguai e Argentina.",
+   471→    category: "Desigualdade",
+   472→    year: 2024,
+   473→  },
+   474→  {
+   475→    id: "cur-21",
+   476→    text: "O Palma Ratio caiu de 15,8 em 2012 para 13,4 em 2024, indicando que os 10% mais ricos hoje concentram 13,4 vezes mais renda que os 40% mais pobres.",
+   477→    category: "Desigualdade",
+   478→    year: 2024,
+   479→  },
+   480→  {
+   481→    id: "cur-22",
+   482→    text: "A população idosa (65+) tem a menor taxa de pobreza entre os grupos etários: 9,3% em 2024, contra 23,8% das crianças, refletindo o papel da Previdência Social.",
+   483→    category: "Pobreza",
+   484→    year: 2024,
+   485→  },
+   486→  {
+   487→    id: "cur-23",
+   488→    text: "Entre 2012 e 2024, o Brasil cresceu em 18,4 milhões de habitantes, passando de 198,6 para 217,0 milhões, o que intensifica os desafios de distribuição de renda.",
+   489→    category: "Demografia",
+   490→    year: 2024,
+   491→  },
+   492→  {
+   493→    id: "cur-24",
+   494→    text: "O emprego informal afeta 37,5% dos trabalhadores em 2024. No pico de 2019, eram 40,7%, o que significa que milhões não têm direitos trabalhistas garantidos.",
+   495→    category: "Emprego",
+   496→    year: 2024,
+   497→  },
+   498→  {
+   499→    id: "cur-25",
+   500→    text: "A proporção de domicílios com habitação adequada subiu de 62,4% em 2012 para 77,5% em 2024, mas ainda há mais de 48 milhões de brasileiros em condições inadequadas.",
+   501→    category: "Habitação",
+   502→    year: 2024,
+   503→  },
+   504→];
+   505→
+   506→// =============================================================================
+   507→// QUIZ QUESTIONS - 25 questions about IBGE data
+   508→// =============================================================================
+   509→
+   510→export const quizQuestions: QuizQuestion[] = [
+   511→  {
+   512→    id: "q01",
+   513→    question: "Qual foi a taxa de pobreza extrema (US$ 2,15/dia) do Brasil em 2024?",
+   514→    options: ["5,2%", "3,5%", "7,1%", "4,4%"],
+   515→    correctIndex: 1,
+   516→    category: "Pobreza",
+   517→  },
+   518→  {
+   519→    id: "q02",
+   520→    question: "Qual região brasileira possui a maior taxa de pobreza em 2024?",
+   521→    options: ["Norte", "Nordeste", "Sudeste", "Centro-Oeste"],
+   522→    correctIndex: 1,
+   523→    category: "Pobreza",
+   524→  },
+   525→  {
+   526→    id: "q03",
+   527→    question: "Qual é o valor do Índice de Gini do Brasil em 2024?",
+   528→    options: ["0,530", "0,518", "0,504", "0,517"],
+   529→    correctIndex: 2,
+   530→    category: "Desigualdade",
+   531→  },
+   532→  {
+   533→    id: "q04",
+   534→    question: "Qual estado brasileiro tem a maior taxa de pobreza em 2024?",
+   535→    options: ["Alagoas", "Maranhão", "Piauí", "Amazonas"],
+   536→    correctIndex: 1,
+   537→    category: "Pobreza",
+   538→  },
+   539→  {
+   540→    id: "q05",
+   541→    question: "Qual é a renda média mensal da população branca no Brasil em 2024?",
+   542→    options: ["R$ 2.567", "R$ 2.520", "R$ 3.014", "R$ 1.834"],
+   543→    correctIndex: 2,
+   544→    category: "Renda",
+   545→  },
+   546→  {
+   547→    id: "q06",
+   548→    question: "Em que ano a taxa de pobreza (US$ 6,85/dia) atingiu seu maior valor na série histórica?",
+   549→    options: ["2020", "2017", "2023", "2021"],
+   550→    correctIndex: 3,
+   551→    category: "Pobreza",
+   552→  },
+   553→  {
+   554→    id: "q07",
+   555→    question: "Qual porcentagem da renda total é concentrada nos 20% mais ricos da população em 2024?",
+   556→    options: ["56,7%", "43,3%", "19,8%", "40,2%"],
+   557→    correctIndex: 0,
+   558→    category: "Desigualdade",
+   559→  },
+   560→  {
+   561→    id: "q08",
+   562→    question: "Qual região tem o maior rendimento médio mensal em 2024?",
+   563→    options: ["Sul", "Sudeste", "Centro-Oeste", "Norte"],
+   564→    correctIndex: 1,
+   565→    category: "Renda",
+   566→  },
+   567→  {
+   568→    id: "q09",
+   569→    question: "Qual é a taxa de alfabetização do Brasil em 2024?",
+   570→    options: ["93,7%", "94,4%", "95,2%", "97,1%"],
+   571→    correctIndex: 2,
+   572→    category: "Educação",
+   573→  },
+   574→  {
+   575→    id: "q10",
+   576→    question: "Quantos milhões de famílias eram beneficiárias do Bolsa Família no pico do programa em 2023?",
+   577→    options: ["14,2 milhões", "20,6 milhões", "21,4 milhões", "20,1 milhões"],
+   578→    correctIndex: 2,
+   579→    category: "Política Social",
+   580→  },
+   581→  {
+   582→    id: "q11",
+   583→    question: "Qual é a diferença salarial entre homens e mulheres em 2024?",
+   584→    options: [
+   585→      "Homens ganham R$ 738 a mais",
+   586→      "Mulheres ganham R$ 500 a mais",
+   587→      "Homens ganham R$ 1.200 a mais",
+   588→      "Não há diferença significativa",
+   589→    ],
+   590→    correctIndex: 0,
+   591→    category: "Desigualdade",
+   592→  },
+   593→  {
+   594→    id: "q12",
+   595→    question: "Em que ano a insegurança alimentar moderada/grave atingiu seu pico?",
+   596→    options: ["2018", "2020", "2022", "2024"],
+   597→    correctIndex: 1,
+   598→    category: "Segurança Alimentar",
+   599→  },
+   600→  {
+   601→    id: "q13",
+   602→    question: "Qual é o IDH da região Nordeste?",
+   603→    options: ["0,738", "0,663", "0,667", "0,758"],
+   604→    correctIndex: 1,
+   605→    category: "Desigualdade",
+   606→  },
+   607→  {
+   608→    id: "q14",
+   609→    question: "Qual porcentagem da população brasileira tem acesso a esgotamento sanitário em 2024?",
+   610→    options: ["50,3%", "57,1%", "60,2%", "63,5%"],
+   611→    correctIndex: 3,
+   612→    category: "Infraestrutura",
+   613→  },
+   614→  {
+   615→    id: "q15",
+   616→    question: "Qual grupo racial tem o menor rendimento médio mensal em 2024?",
+   617→    options: ["Preta", "Parda", "Indígena", "Preta e Parda empatam"],
+   618→    correctIndex: 2,
+   619→    category: "Renda",
+   620→  },
+   621→  {
+   622→    id: "q16",
+   623→    question: "A taxa de escolarização de crianças de 6 a 14 anos em 2024 é de aproximadamente:",
+   624→    options: ["95,2%", "97,1%", "98,9%", "99,5%"],
+   625→    correctIndex: 2,
+   626→    category: "Educação",
+   627→  },
+   628→  {
+   629→    id: "q17",
+   630→    question: "Qual foi o impacto da pandemia na taxa de ocupação em 2020?",
+   631→    options: [
+   632→      "Subiu de 56,0% para 57,0%",
+   633→      "Caiu de 56,0% para 51,8%",
+   634→      "Caiu de 58,5% para 54,3%",
+   635→      "Manteve-se estável",
+   636→    ],
+   637→    correctIndex: 1,
+   638→    category: "Emprego",
+   639→  },
+   640→  {
+   641→    id: "q18",
+   642→    question: "O Palma Ratio em 2024 indica que os 10% mais ricos concentram quantas vezes mais renda que os 40% mais pobres?",
+   643→    options: ["15,8 vezes", "14,3 vezes", "13,4 vezes", "13,7 vezes"],
+   644→    correctIndex: 2,
+   645→    category: "Desigualdade",
+   646→  },
+   647→  {
+   648→    id: "q19",
+   649→    question: "Qual é a taxa de pobreza infantil (0-14 anos) em 2024?",
+   650→    options: ["33,7%", "28,3%", "23,8%", "23,1%"],
+   651→    correctIndex: 2,
+   652→    category: "Pobreza",
+   653→  },
+   654→  {
+   655→    id: "q20",
+   656→    question: "Qual porcentagem de domicílios brasileiros tem acesso à internet em 2024?",
+   657→    options: ["72,2%", "83,0%", "87,5%", "90,1%"],
+   658→    correctIndex: 2,
+   659→    category: "Infraestrutura",
+   660→  },
+   661→  {
+   662→    id: "q21",
+   663→    question: "Qual região tem o menor IDH no Brasil?",
+   664→    options: ["Norte", "Nordeste", "Centro-Oeste", "Sul"],
+   665→    correctIndex: 1,
+   666→    category: "Desigualdade",
+   667→  },
+   668→  {
+   669→    id: "q22",
+   670→    question: "Quantos milhões de habitantes o Brasil tinha em 2024 segundo as estimativas?",
+   671→    options: ["210,5 milhões", "214,5 milhões", "215,8 milhões", "217,0 milhões"],
+   672→    correctIndex: 3,
+   673→    category: "Demografia",
+   674→  },
+   675→  {
+   676→    id: "q23",
+   677→    question: "Em qual ano a taxa de emprego informal atingiu seu valor mais alto na série?",
+   678→    options: ["2015", "2019", "2021", "2024"],
+   679→    correctIndex: 1,
+   680→    category: "Emprego",
+   681→  },
+   682→  {
+   683→    id: "q24",
+   684→    question: "A taxa de pobreza entre idosos (65+) em 2024 é de:",
+   685→    options: ["14,2%", "11,7%", "9,3%", "9,8%"],
+   686→    correctIndex: 2,
+   687→    category: "Pobreza",
+   688→  },
+   689→  {
+   690→    id: "q25",
+   691→    question: "Qual é a proporção de domicílios com habitação adequada em 2024?",
+   692→    options: ["70,8%", "74,2%", "77,5%", "80,1%"],
+   693→    correctIndex: 2,
+   694→    category: "Habitação",
+   695→  },
+   696→];
+   697→
+   698→// =============================================================================
+   699→// HELPER FUNCTIONS
+   700→// =============================================================================
+   701→
+   702→/** Format a number as Brazilian currency (R$) */
+   703→export function formatCurrency(value: number): string {
+   704→  return value.toLocaleString("pt-BR", {
+   705→    style: "currency",
+   706→    currency: "BRL",
+   707→    minimumFractionDigits: 0,
+   708→    maximumFractionDigits: 0,
+   709→  });
+   710→}
+   711→
+   712→/** Format a number as percentage with 1 decimal place */
+   713→export function formatPercentage(value: number): string {
+   714→  return `${value.toFixed(1)}%`;
+   715→}
+   716→
+   717→/** Format Gini index with 3 decimal places */
+   718→export function formatGini(value: number): string {
+   719→  return value.toFixed(3);
+   720→}
+   721→
+   722→/** Get latest value from a YearValuePair series */
+   723→export function getLatestValue(data: YearValuePair[]): number {
+   724→  return data[data.length - 1]?.value ?? 0;
+   725→}
+   726→
+   727→/** Get value for a specific year from a YearValuePair series */
+   728→export function getValueForYear(data: YearValuePair[], year: number): number | null {
+   729→  const entry = data.find((d) => d.year === year);
+   730→  return entry ? entry.value : null;
+   731→}
+   732→
+   733→/** Calculate the change between the first and last values in a series */
+   734→export function getTotalChange(data: YearValuePair[]): number {
+   735→  if (data.length < 2) return 0;
+   736→  return data[data.length - 1].value - data[0].value;
+   737→}
+   738→
+   739→/** Calculate the percentage point change between first and last values */
+   740→export function getPercentagePointChange(data: YearValuePair[]): number {
+   741→  return getTotalChange(data);
+   742→}
+   743→
+   744→/** Get the year with the maximum value in a series */
+   745→export function getYearWithMaxValue(data: YearValuePair[]): { year: number; value: number } {
+   746→  const maxEntry = data.reduce((prev, curr) => (curr.value > prev.value ? curr : prev), data[0]);
+   747→  return maxEntry;
+   748→}
+   749→
+   750→/** Get the year with the minimum value in a series */
+   751→export function getYearWithMinValue(data: YearValuePair[]): { year: number; value: number } {
+   752→  const minEntry = data.reduce((prev, curr) => (curr.value < prev.value ? curr : prev), data[0]);
+   753→  return minEntry;
+   754→}
+   755→
+   756→/** Get a random subset of quiz questions */
+   757→export function getRandomQuizQuestions(count: number): QuizQuestion[] {
+   758→  const shuffled = [...quizQuestions].sort(() => Math.random() - 0.5);
+   759→  return shuffled.slice(0, Math.min(count, shuffled.length));
+   760→}
+   761→
+   762→/** Get quiz questions by category */
+   763→export function getQuizQuestionsByCategory(category: string): QuizQuestion[] {
+   764→  return quizQuestions.filter((q) => q.category === category);
+   765→}
+   766→
+   767→/** Get all unique quiz categories */
+   768→export function getQuizCategories(): string[] {
+   769→  return Array.from(new Set(quizQuestions.map((q) => q.category)));
+   770→}
+   771→
+   772→/** Get a random curiosity */
+   773→export function getRandomCuriosity(): Curiosidade {
+   774→  return curiosidades[Math.floor(Math.random() * curiosidades.length)];
+   775→}
+   776→
+   777→/** Get curiosities by category */
+   778→export function getCuriositiesByCategory(category: string): Curiosidade[] {
+   779→  return curiosidades.filter((c) => c.category === category);
+   780→}
+   781→
+   782→/** Get all unique curiosity categories */
+   783→export function getCuriosityCategories(): string[] {
+   784→  return Array.from(new Set(curiosidades.map((c) => c.category)));
+   785→}
+   786→
+   787→/** Calculate the number of people in poverty based on rate and population */
+   788→export function calculatePeopleInPoverty(
+   789→  povertyRateValue: number,
+   790→  populationMillions: number
+   791→): number {
+   792→  return Math.round((povertyRateValue / 100) * populationMillions);
+   793→}
+   794→
