@@ -26,6 +26,7 @@ export function AuthScreen() {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [activeTab, setActiveTab] = useState("login");
   const login = useAuthStore((s) => s.login);
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -41,15 +42,32 @@ export function AuthScreen() {
       });
 
       if (result?.error) {
-        setError("Email ou senha incorretos");
+        setError("Email ou senha incorretos. Tente novamente.");
       } else if (result?.ok) {
-        const res = await fetch("/api/auth/session");
-        const session = await res.json();
-        if (session?.user) {
+        // Fetch session to get user data
+        try {
+          const res = await fetch("/api/auth/session");
+          const session = await res.json();
+          if (session?.user) {
+            login({
+              id: session.user.id || "",
+              email: session.user.email || loginEmail,
+              name: session.user.name || loginEmail.split("@")[0],
+            });
+          } else {
+            // Fallback: still login with basic info
+            login({
+              id: "",
+              email: loginEmail,
+              name: loginEmail.split("@")[0],
+            });
+          }
+        } catch {
+          // Even if session fetch fails, we know signIn succeeded
           login({
-            id: session.user.id || "",
-            email: session.user.email || loginEmail,
-            name: session.user.name || loginEmail.split("@")[0],
+            id: "",
+            email: loginEmail,
+            name: loginEmail.split("@")[0],
           });
         }
       }
@@ -64,6 +82,11 @@ export function AuthScreen() {
     e.preventDefault();
     setError("");
 
+    if (!registerEmail || !registerPassword) {
+      setError("Email e senha são obrigatórios");
+      return;
+    }
+
     if (registerPassword !== confirmPassword) {
       setError("As senhas não coincidem");
       return;
@@ -77,11 +100,12 @@ export function AuthScreen() {
     setIsLoading(true);
 
     try {
+      // Step 1: Create the account
       const res = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          name: registerName,
+          name: registerName || registerEmail.split("@")[0],
           email: registerEmail,
           password: registerPassword,
         }),
@@ -91,16 +115,23 @@ export function AuthScreen() {
 
       if (!res.ok) {
         setError(data.error || "Erro ao criar conta");
+        setIsLoading(false);
         return;
       }
 
+      // Step 2: Sign in with the new credentials
       const result = await signIn("credentials", {
         email: registerEmail,
         password: registerPassword,
         redirect: false,
       });
 
-      if (result?.ok) {
+      if (result?.error) {
+        // Account was created but auto-login failed - switch to login tab
+        setError("Conta criada! Faça login com suas credenciais.");
+        setActiveTab("login");
+        setLoginEmail(registerEmail);
+      } else if (result?.ok || !result?.error) {
         login({
           id: data.id || "",
           email: data.email || registerEmail,
@@ -131,7 +162,7 @@ export function AuthScreen() {
         </div>
 
         <Card className="border-0 shadow-xl">
-          <Tabs defaultValue="login" className="w-full">
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             <TabsList className="grid w-full grid-cols-2 rounded-none border-b">
               <TabsTrigger value="login" className="rounded-none data-[state=active]:shadow-none">
                 Entrar
@@ -160,6 +191,7 @@ export function AuthScreen() {
                       onChange={(e) => setLoginEmail(e.target.value)}
                       required
                       className="h-11"
+                      autoComplete="email"
                     />
                   </div>
                   <div className="space-y-2">
@@ -173,6 +205,7 @@ export function AuthScreen() {
                         onChange={(e) => setLoginPassword(e.target.value)}
                         required
                         className="h-11 pr-10"
+                        autoComplete="current-password"
                       />
                       <button
                         type="button"
@@ -224,6 +257,7 @@ export function AuthScreen() {
                       value={registerName}
                       onChange={(e) => setRegisterName(e.target.value)}
                       className="h-11"
+                      autoComplete="name"
                     />
                   </div>
                   <div className="space-y-2">
@@ -236,6 +270,7 @@ export function AuthScreen() {
                       onChange={(e) => setRegisterEmail(e.target.value)}
                       required
                       className="h-11"
+                      autoComplete="email"
                     />
                   </div>
                   <div className="space-y-2">
@@ -248,6 +283,7 @@ export function AuthScreen() {
                       onChange={(e) => setRegisterPassword(e.target.value)}
                       required
                       className="h-11"
+                      autoComplete="new-password"
                     />
                   </div>
                   <div className="space-y-2">
@@ -260,10 +296,15 @@ export function AuthScreen() {
                       onChange={(e) => setConfirmPassword(e.target.value)}
                       required
                       className="h-11"
+                      autoComplete="new-password"
                     />
                   </div>
                   {error && (
-                    <p className="text-sm text-red-500 bg-red-50 p-2 rounded-md">
+                    <p className={`text-sm p-2 rounded-md ${
+                      error.includes("Conta criada") 
+                        ? "text-emerald-600 bg-emerald-50" 
+                        : "text-red-500 bg-red-50"
+                    }`}>
                       {error}
                     </p>
                   )}

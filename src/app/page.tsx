@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useCallback } from "react";
 import { SessionProvider, useSession } from "next-auth/react";
 import { useAuthStore, useNavigationStore } from "@/lib/auth-store";
 import { AuthScreen } from "@/components/auth/auth-screen";
@@ -13,7 +13,7 @@ import { Loader2 } from "lucide-react";
 
 function AppContent() {
   const { data: session, status } = useSession();
-  const { isAuthenticated, login, setLoading, isLoading } = useAuthStore();
+  const { isAuthenticated, isLoading, login, logout, setLoading } = useAuthStore();
   const activeSection = useNavigationStore((s) => s.activeSection);
 
   // Sync NextAuth session with Zustand store
@@ -22,21 +22,26 @@ function AppContent() {
       setLoading(true);
       return;
     }
-    if (session?.user) {
+
+    if (status === "authenticated" && session?.user) {
       login({
         id: (session.user as { id?: string }).id || "",
         email: session.user.email || "",
         name: session.user.name || "",
       });
-    } else {
+    } else if (status === "unauthenticated") {
+      // Only logout if we were previously authenticated
+      if (isAuthenticated) {
+        logout();
+      }
       setLoading(false);
     }
-  }, [session, status, login, setLoading]);
+  }, [session, status, login, logout, isAuthenticated, setLoading]);
 
-  // Loading state
-  if (isLoading && status === "loading") {
+  // Loading state - only show for initial session check
+  if (isLoading && status === "loading" && !isAuthenticated) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-emerald-50 via-white to-yellow-50">
         <div className="text-center">
           <Loader2 className="w-8 h-8 animate-spin text-emerald-600 mx-auto" />
           <p className="text-gray-500 text-sm mt-3">Carregando...</p>
@@ -80,7 +85,7 @@ function AppContent() {
 
 export default function Home() {
   return (
-    <SessionProvider>
+    <SessionProvider refetchInterval={5 * 60} refetchOnWindowFocus={true}>
       <AppContent />
     </SessionProvider>
   );

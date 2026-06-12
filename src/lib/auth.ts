@@ -13,36 +13,45 @@ export const authOptions: NextAuthOptions = {
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
-          throw new Error("Email e senha são obrigatórios");
+          return null;
         }
 
-        const user = await db.user.findUnique({
-          where: { email: credentials.email },
-        });
+        try {
+          const user = await db.user.findUnique({
+            where: { email: credentials.email },
+          });
 
-        if (!user) {
-          throw new Error("Usuário não encontrado");
+          if (!user) {
+            return null;
+          }
+
+          const isValid = await bcrypt.compare(
+            credentials.password,
+            user.password
+          );
+
+          if (!isValid) {
+            return null;
+          }
+
+          return { id: user.id, email: user.email, name: user.name };
+        } catch (error) {
+          console.error("Auth error:", error);
+          return null;
         }
-
-        const isValid = await bcrypt.compare(
-          credentials.password,
-          user.password
-        );
-
-        if (!isValid) {
-          throw new Error("Senha incorreta");
-        }
-
-        return { id: user.id, email: user.email, name: user.name };
       },
     }),
   ],
-  session: { strategy: "jwt" },
+  session: {
+    strategy: "jwt",
+    maxAge: 30 * 24 * 60 * 60, // 30 days
+  },
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
         token.name = user.name;
+        token.email = user.email;
       }
       return token;
     },
@@ -50,6 +59,7 @@ export const authOptions: NextAuthOptions = {
       if (session.user) {
         session.user.id = token.id as string;
         session.user.name = token.name as string;
+        session.user.email = token.email as string;
       }
       return session;
     },
@@ -58,4 +68,5 @@ export const authOptions: NextAuthOptions = {
     signIn: "/",
   },
   secret: process.env.NEXTAUTH_SECRET || "conheca-o-brasil-secret-key-2024",
+  debug: false,
 };
