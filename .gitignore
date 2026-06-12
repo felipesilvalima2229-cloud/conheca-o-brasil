@@ -36,7 +36,6 @@ yarn-error.log*
 # vercel
 .vercel
 
-
 # typescript
 *.tsbuildinfo
 next-env.d.ts
@@ -50,5 +49,35 @@ test
 prompt
 
 server.log
+
 # Skills directory
 /skills/
+
+# Dev tools
+gh
+
+# Screenshots
+screenshot-*.png
+
+# Search results / temp data
+search_ibge*.json
+ibge_data.json
+tool-results/
+
+# Examples
+examples/
+
+# Download folder
+download/
+
+# DB
+db/
+
+# Worklog
+worklog.md
+
+# Mini services
+mini-services/
+
+# Caddy config
+Caddyfile
